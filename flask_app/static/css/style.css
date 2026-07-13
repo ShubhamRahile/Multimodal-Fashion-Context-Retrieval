@@ -1,0 +1,295 @@
+/* Design System & Custom Styling for Glance Fashion Retrieval */
+
+:root {
+    --bg-color: #0b0f19;
+    --card-bg: rgba(22, 28, 45, 0.65);
+    --border-color: rgba(255, 255, 255, 0.07);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    --button-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --card-hover-bg: rgba(30, 41, 59, 0.8);
+    --font-outfit: 'Outfit', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.Outfit-font {
+    font-family: var(--font-outfit);
+}
+
+.fw-extrabold {
+    font-weight: 800;
+}
+
+/* Text Gradients */
+.text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Glassmorphic Navigation */
+.navbar {
+    background: rgba(11, 15, 25, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-family: var(--font-outfit);
+    font-size: 1.5rem;
+    color: var(--text-primary) !important;
+}
+
+/* Hero Section */
+header {
+    transition: all 0.5s ease-in-out;
+}
+header.hero-minimized {
+    margin-bottom: 2rem !important;
+    padding-top: 1rem;
+}
+header.hero-minimized h1 {
+    font-size: 2.2rem;
+}
+header.hero-minimized p {
+    display: none;
+}
+
+/* Glassmorphic Search Card */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color) !important;
+    border-radius: 20px;
+}
+
+.search-box-wrapper {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 5px 5px 5px 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-box-wrapper:focus-within {
+    border-color: #818cf8;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+    transform: scale(1.01);
+}
+
+.search-box-wrapper input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.btn-gradient {
+    background: var(--button-gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px !important;
+    font-family: var(--font-outfit);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Suggestion Tags */
+.suggestion-tag {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.suggestion-tag:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #c7d2fe;
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Glow Badges (Navbar Status) */
+.bg-success-glow {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #34d399 !important;
+}
+.border-success-glow-border {
+    border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.bg-danger-glow {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #f87171 !important;
+}
+.border-danger-glow-border {
+    border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Fashion Cards Grid */
+.fashion-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.fashion-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    background: var(--card-hover-bg);
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+}
+
+.image-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 280px;
+    background: #0f172a;
+}
+
+.fashion-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.fashion-card:hover .fashion-img {
+    transform: scale(1.08);
+}
+
+.score-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-family: var(--font-outfit);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 30px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Metadata Badges */
+.italic-text {
+    font-style: italic;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.metadata-pills .badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    margin-right: 4px;
+}
+
+.pill-category {
+    background: rgba(56, 189, 248, 0.1) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.pill-color {
+    background: rgba(251, 191, 36, 0.1) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.pill-scene {
+    background: rgba(167, 139, 250, 0.1) !important;
+    color: #a78bfa !important;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+/* Custom Glass Buttons */
+.btn-outline-glass {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: var(--font-outfit);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-glass:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Modal Styling */
+.glass-modal {
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px;
+}
+
+.modal-table th {
+    width: 40%;
+}
+
+.modal-table td, .modal-table th {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+}
+
+/* Animations / Pulse Loading Spinner */
+.spinner-pulse {
+    width: 60px;
+    height: 60px;
+    background-color: #6366f1;
+    border-radius: 100%;
+    margin: 40px auto;
+    animation: sk-scaleout 1.2s infinite ease-in-out;
+}
+
+@keyframes sk-scaleout {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1.0);
+        opacity: 0;
+    }
+}
+
+/* Footer Styling */
+footer {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}

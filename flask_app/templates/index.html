@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glance - Multimodal Fashion & Context Retrieval</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Glassmorphic Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fa-solid fa-wand-magic-sparkles me-2 text-gradient"></i>
+                <span class="fw-bold">Glance</span> <span class="fw-light">Fashion</span>
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                {% if index_exists %}
+                <span class="badge bg-success-glow border border-success-glow-border px-3 py-2 rounded-pill">
+                    <i class="fa-solid fa-database me-1 text-success"></i> Index Active: {{ total_images }} Images
+                </span>
+                {% else %}
+                <span class="badge bg-danger-glow border border-danger-glow-border px-3 py-2 rounded-pill">
+                    <i class="fa-solid fa-triangle-exclamation me-1 text-danger"></i> Index Offline
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container py-5">
+
+        <!-- Header / Hero Section (smaller when showing results) -->
+        <header class="text-center mb-5 {% if results %}hero-minimized{% endif %}">
+            <h1 class="display-4 fw-extrabold Outfit-font mb-3">
+                Multimodal <span class="text-gradient">Fashion Search</span>
+            </h1>
+            <p class="lead text-secondary mx-auto" style="max-width: 650px;">
+                Experience the next generation of visual discovery. Search a collection of fashion items using natural
+                language, contextual scenes, and detailed styles instead of filenames.
+            </p>
+        </header>
+
+        <!-- Search Bar Card -->
+        <section class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card glass-card p-4 shadow-lg border-0">
+                    <form action="{{ url_for('search') }}" method="POST" id="search-form">
+                        <div class="input-group input-group-lg search-box-wrapper">
+                            <span class="input-group-text bg-transparent border-0 text-secondary">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" name="query" class="form-control bg-transparent border-0 text-white"
+                                placeholder="Try 'A person wearing a blue shirt sitting on a park bench'..."
+                                value="{{ query if query else '' }}" required autocomplete="off" id="query-input">
+                            <button class="btn btn-gradient px-4 rounded-pill-end" type="submit" id="search-btn">
+                                <span class="btn-text">Retrieve</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
+                                    id="search-spinner"></span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Search Suggestions
+                    <div class="mt-3 search-suggestions">
+                        <small class="text-muted d-block mb-2">Evaluation & Example Queries:</small>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="{{ url_for('results', query='A person in a bright yellow raincoat.') }}" class="suggestion-tag">
+                                "Yellow raincoat"
+                            </a>
+                            <a href="{{ url_for('results', query='Someone wearing a blue shirt sitting on a park bench.') }}" class="suggestion-tag">
+                                "Blue shirt on park bench"
+                            </a>
+                            <a href="{{ url_for('results', query='Professional business attire inside a modern office.') }}" class="suggestion-tag">
+                                "Business office attire"
+                            </a>
+                            <a href="{{ url_for('results', query='Casual weekend outfit for a city walk.') }}" class="suggestion-tag">
+                                "City walk casual"
+                            </a>
+                            <a href="{{ url_for('results', query='A red tie and a white shirt in a formal setting.') }}" class="suggestion-tag">
+                                "Red tie & white shirt"
+                            </a>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Screen -->
+        <section class="text-center py-5 d-none" id="loading-section">
+            <div class="spinner-pulse mb-3"></div>
+            <h4 class="text-white fw-bold">Extracting semantic features...</h4>
+            <p class="text-secondary">Encoding query and scanning FAISS index...</p>
+        </section>
+
+        <!-- Search Results Grid -->
+        {% if results is not none %}
+        <section id="results-section">
+            <div class="d-flex align-items-center mb-4">
+                <h2 class="h3 fw-bold Outfit-font text-white mb-0">
+                    Retrieval Results for <span class="text-gradient">"{{ query }}"</span>
+                </h2>
+                <span class="badge bg-secondary ms-3">{{ results|length }} items found</span>
+            </div>
+
+            {% if results|length > 0 %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                {% for item in results %}
+                <div class="col">
+                    <div class="card h-100 fashion-card border-0 shadow-sm overflow-hidden">
+                        <!-- Match Score Badge -->
+                        <div class="score-badge">
+                            {{ (item.score * 100)|round(1) }}% Match
+                        </div>
+
+                        <!-- Image Container with zoom-hover effect -->
+                        <div class="image-wrapper">
+                            <img src="{{ url_for('serve_dataset_image', filename=item.image_path.split('/')[-1]) }}"
+                                class="card-img-top fashion-img" alt="Fashion Apparel">
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <!-- Generated Caption -->
+                            <p class="card-text text-secondary italic-text mb-3 flex-grow-1">
+                                <i class="fa-solid fa-quote-left me-1 text-primary"></i>
+                                {{ item.caption }}
+                                <i class="fa-solid fa-quote-right ms-1 text-primary"></i>
+                            </p>
+
+                            <!-- Structured Metadata Badges -->
+                            <div class="metadata-pills mb-3">
+                                <span class="badge pill-category mb-1">
+                                    <i class="fa-solid fa-shirt me-1"></i> {{ item.clothing|title }}
+                                </span>
+                                <span class="badge pill-color mb-1">
+                                    <i class="fa-solid fa-palette me-1"></i> {{ item.color|title }}
+                                </span>
+                                <span class="badge pill-scene mb-1">
+                                    <i class="fa-solid fa-building me-1"></i> {{ item.scene|title }}
+                                </span>
+                            </div>
+
+                            <!-- Detail Action button -->
+                            <button class="btn btn-outline-glass w-100 btn-sm mt-auto" data-bs-toggle="modal"
+                                data-bs-target="#detailModal{{ loop.index }}">
+                                <i class="fa-solid fa-chart-simple me-1"></i> View Vector Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Detailed Vectors/Metadata -->
+                <div class="modal fade" id="detailModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content glass-modal border-0 text-white">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title fw-bold Outfit-font">Vector Analysis Metadata</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-4">
+                                    <img src="{{ url_for('serve_dataset_image', filename=item.image_path.split('/')[-1]) }}"
+                                        class="img-fluid rounded shadow-lg" style="max-height: 250px;"
+                                        alt="Fashion Item">
+                                </div>
+                                <table class="table table-dark table-borderless bg-transparent modal-table">
+                                    <tbody>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Embedding ID</th>
+                                            <td><code class="text-info">#{{ item.embedding_id }}</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Similarity Score</th>
+                                            <td class="text-success fw-bold">{{ item.score }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Image Source</th>
+                                            <td><small class="text-break">{{ item.image_path }}</small></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">BLIP Caption</th>
+                                            <td><span class="italic-text">{{ item.caption }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Detected Clothing</th>
+                                            <td><span class="badge pill-category">{{ item.clothing }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Detected Color</th>
+                                            <td><span class="badge pill-color">{{ item.color }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-secondary fw-semibold">Context / Scene</th>
+                                            <td><span class="badge pill-scene">{{ item.scene }}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- No results state -->
+            <div class="text-center py-5">
+                <i class="fa-solid fa-magnifying-glass-minus display-3 text-secondary mb-3"></i>
+                <h4 class="text-white fw-bold">No matching fashion apparel found</h4>
+                <p class="text-secondary">Try broadening your queries (e.g. "shirt", "raincoat", "attire").</p>
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4 mt-auto text-center border-top border-dark">
+        <div class="container">
+            <span class="text-secondary small">Glance ML Internship Assignment &copy; 2026. Made with OpenCLIP + BLIP +
+                FAISS.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
