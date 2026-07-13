@@ -47,7 +47,7 @@ flowchart TD
 ```
 fashion-retrieval/
 ├── dataset/
-│   └── images/               # 600 indexed fashion image samples
+│   └── images/               # 1350 indexed fashion image samples
 ├── indexer/
 │   ├── image_indexer.py      # Indexing orchestrator & raw npy export
 │   ├── feature_extractor.py  # OpenCLIP image & text encoder wrapper
